@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.geometry.Insets?>
+
+<FlowPane alignment="CENTER" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.youtubetomp3.youtubetomp3" orientation="VERTICAL" prefWidth="300" prefHeight="90" style="-fx-background-image: url(/background.jpg); -fx-background-size: stretch">
+    <padding>
+        <Insets bottom="5" left="5" top="5" right="5"/>
+    </padding>
+    <HBox fx:id="HBox1linkinsertion">
+        <TableView fx:id="tableview1mp3" prefWidth="300" prefHeight="90" style="-fx-focus-color: #FF0000; -fx-faint-focus-color: transparent; -fx-font-family: Times New Roman; -fx-font-size: 14; -fx-text-fill: #000000" stylesheets="/tableview.css"/>
+    </HBox>
+</FlowPane>

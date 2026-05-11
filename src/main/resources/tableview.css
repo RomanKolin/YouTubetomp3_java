@@ -1,0 +1,16 @@
+.table-view{-fx-background-color: transparent}
+.placeholder .label{-fx-text-fill: transparent}
+.column-header-background{visibility: hidden; -fx-pref-height: 0}
+.filler{-fx-background-color: transparent}
+.table-column{-fx-alignment: CENTER; -fx-background-color: transparent}
+.table-cell{-fx-border-width: 0 0 0 0; -fx-alignment: CENTER}
+.table-row-cell{-fx-background-color: transparent}
+.table-row-cell .text{-fx-fill: #000000; -fx-font-style: Italic}
+.table-row-cell:selected{-fx-background-color: #4B0000}
+.table-row-cell:selected .text{-fx-fill: #FF0000}
+.scroll-bar{-fx-background-color: transparent; -fx-pref-width: 0}
+.scroll-bar .thumb{-fx-background-color: transparent}
+.scroll-bar .increment-button{-fx-padding: 0}
+.scroll-bar .decrement-button{-fx-padding: 0}
+.scroll-bar .increment-arrow{-fx-shape: ""; -fx-padding: 0}
+.scroll-bar .decrement-arrow{-fx-shape: ""; -fx-padding: 0}
