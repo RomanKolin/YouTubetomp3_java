@@ -304,7 +304,7 @@ public class youtubetomp3 extends Application
 
     public void Metadata(String link, Timeline tl) throws IOException
     {
-        Process metadatproc = Runtime.getRuntime().exec(new String[]{"bash", "-c", "yt-dlp --print \"%(artist)s - %(title)s\" \"" + link + "\""});
+        Process metadatproc = Runtime.getRuntime().exec(new String[]{"bash", "-c", "yt-dlp --no-playlist --print \"%(artist)s - %(title)s\" \"" + link + "\""});
         BufferedReader br = new BufferedReader(new InputStreamReader(metadatproc.getInputStream()));
 
         metadatproc.onExit().thenRun(() ->
@@ -372,7 +372,7 @@ public class youtubetomp3 extends Application
 
     public void Downloading(Link track) throws IOException
     {
-        track.p = Runtime.getRuntime().exec(new String[]{"bash", "-c", "yt-dlp -x --audio-format mp3 --audio-quality 320K --parse-metadata \"%(title)s:%(artist)s - %(track)s%\" --embed-metadata --postprocessor-args \"-ar 44100 -ac 2 -metadata album= -metadata genre= -metadata composer= -metadata date= -metadata comment= -metadata description= -metadata synopsis= -metadata purl=\" -o \"~/Downloads/" + track.mp3metadat + "\" \"" + track.mp3link + "\""});
+        track.p = Runtime.getRuntime().exec(new String[]{"bash", "-c", "yt-dlp --no-playlist -x --audio-format mp3 --audio-quality 320K --parse-metadata \"%(title)s:%(artist)s - %(track)s%\" --embed-metadata --postprocessor-args \"-ar 44100 -ac 2 -metadata album= -metadata genre= -metadata composer= -metadata date= -metadata comment= -metadata description= -metadata synopsis= -metadata purl=\" -o \"~/Downloads/" + track.mp3metadat + "\" \"" + track.mp3link + "\""});
         BufferedReader br = new BufferedReader(new InputStreamReader(track.p.getInputStream()));
 
         new Thread(() ->
