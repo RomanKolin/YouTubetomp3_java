@@ -318,7 +318,7 @@ public class youtubetomp3 extends Application
                 metadat = br.readLine();
                 if (metadat != null)
                 {
-                    lin = new Link(link, metadat.replace("NA - ", "").replace("\"", ""));
+                    lin = new Link(link, metadat.replace("NA - ", "").replace("\"", "").replace("/", ""));
                     lin.vis.set(true);
                 }
                 else
