@@ -223,6 +223,7 @@ public class youtubetomp3 extends Application
                         id.set(0);
                     if (lin.p != null)
                         lin.p.destroyForcibly();
+                    tableview1mp3.getSelectionModel().clearSelection();
                 }
         });
 
