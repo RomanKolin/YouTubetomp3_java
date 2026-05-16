@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: com.example.youtubetomp3.youtubetomp3
+Main-Class: com.example.youtubetomp3.YouTubetomp3
 

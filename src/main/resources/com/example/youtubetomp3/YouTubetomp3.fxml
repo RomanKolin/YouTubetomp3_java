@@ -5,7 +5,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.geometry.Insets?>
 
-<FlowPane alignment="CENTER" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.youtubetomp3.youtubetomp3" orientation="VERTICAL" prefWidth="300" prefHeight="90" style="-fx-background-image: url(/background.jpg); -fx-background-size: stretch">
+<FlowPane alignment="CENTER" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.youtubetomp3.YouTubetomp3" orientation="VERTICAL" prefWidth="300" prefHeight="90" style="-fx-background-image: url(/background.jpg); -fx-background-size: stretch">
     <padding>
         <Insets bottom="5" left="5" top="5" right="5"/>
     </padding>

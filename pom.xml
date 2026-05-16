@@ -30,7 +30,7 @@
                     <execution>
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.example.youtubetomp3/com.example.youtubetomp3.youtubetomp3</mainClass>
+                            <mainClass>com.example.youtubetomp3/com.example.youtubetomp3.YouTubetomp3</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>

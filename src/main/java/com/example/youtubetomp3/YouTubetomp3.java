@@ -25,7 +25,7 @@ import java.io.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.HashSet;
 
-public class youtubetomp3 extends Application
+public class YouTubetomp3 extends Application
 {
     @FXML
     Scene scene;
@@ -40,7 +40,7 @@ public class youtubetomp3 extends Application
     @Override
     public void start(Stage stage) throws IOException
     {
-        FXMLLoader fxmlLoader = new FXMLLoader(youtubetomp3.class.getResource("youtubetomp3.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(YouTubetomp3.class.getResource("YouTubetomp3.fxml"));
         System.setProperty("prism.lcdtext", "false");
         scene = new Scene(fxmlLoader.load());
         scene.getStylesheets().add("/tooltip.css");
@@ -90,7 +90,7 @@ public class youtubetomp3 extends Application
             Clipboard cb = Clipboard.getSystemClipboard();
             if (ke.isControlDown() && ke.getCode() == KeyCode.V)
                 if (cb.hasString() && cb.getString().contains("www.youtube.com") && linkset.add(cb.getString()))
-                    LinkInsertion(cb.getString());
+                    linkinsertion(cb.getString());
         });
 
         HBox1linkinsertion.setOnDragOver(deo ->
@@ -103,7 +103,7 @@ public class youtubetomp3 extends Application
                 de.consume();
 
                 if (db.hasString() && db.getString().contains("www.youtube.com") && linkset.add(db.getString()))
-                    LinkInsertion(db.getString());
+                    linkinsertion(db.getString());
             });
         });
 
@@ -152,7 +152,7 @@ public class youtubetomp3 extends Application
                     {
                         getTableView().getItems().get(getIndex()).vis.set(false);
                         getTableView().getItems().get(getIndex()).download.set(true);
-                        Downloading(getTableView().getItems().get(getIndex()));
+                        downloading(getTableView().getItems().get(getIndex()));
                     }
                     catch (IOException ex)
                     {
@@ -276,7 +276,7 @@ public class youtubetomp3 extends Application
         });
     }
 
-    public void LinkInsertion(String link)
+    public void linkinsertion(String link)
     {
         AtomicInteger i = new AtomicInteger();
         String[] loadarr = new String[]{"", ".", "..", "..."};
@@ -295,7 +295,7 @@ public class youtubetomp3 extends Application
         tableview1mp3.setItems(mp3list);
         try
         {
-            Metadata(link, tl);
+            metadata(link, tl);
         }
         catch (IOException e)
         {
@@ -303,7 +303,7 @@ public class youtubetomp3 extends Application
         }
     }
 
-    public void Metadata(String link, Timeline tl) throws IOException
+    public void metadata(String link, Timeline tl) throws IOException
     {
         Process metadatproc = Runtime.getRuntime().exec(new String[]{"bash", "-c", "yt-dlp --no-playlist --print \"%(artist)s - %(title)s (%(duration_string)s)\" \"" + link + "\""});
         BufferedReader br = new BufferedReader(new InputStreamReader(metadatproc.getInputStream()));
@@ -334,7 +334,7 @@ public class youtubetomp3 extends Application
         });
     }
 
-    public void Loading(int arr, Link track)
+    public void loading(int arr, Link track)
     {
         double[] percarr;
 
@@ -371,7 +371,7 @@ public class youtubetomp3 extends Application
         track.tl.play();
     }
 
-    public void Downloading(Link track) throws IOException
+    public void downloading(Link track) throws IOException
     {
         track.p = Runtime.getRuntime().exec(new String[]{"bash", "-c", "yt-dlp --no-playlist -x --audio-format mp3 --audio-quality 320K --parse-metadata \"%(title)s:%(artist)s - %(track)s%\" --embed-metadata --postprocessor-args \"-ar 44100 -ac 2 -metadata album= -metadata genre= -metadata composer= -metadata date= -metadata comment= -metadata description= -metadata synopsis= -metadata purl=\" -o \"~/Downloads/" + track.mp3metadat.substring(0, track.mp3metadat.indexOf("(")-1) + "\" \"" + track.mp3link + "\""});
         BufferedReader br = new BufferedReader(new InputStreamReader(track.p.getInputStream()));
@@ -380,15 +380,15 @@ public class youtubetomp3 extends Application
         {
             String lin;
 
-            Loading(1, track);
+            loading(1, track);
             try
             {
                 while ((lin = br.readLine()) != null)
                 {
                     if (lin.contains(" 0.0%"))
-                        Loading(2, track);
+                        loading(2, track);
                     if (lin.contains("[ExtractAudio]"))
-                        Loading(3, track);
+                        loading(3, track);
                     if (lin.contains("[Metadata]"))
                     {
                         track.tl.stop();
