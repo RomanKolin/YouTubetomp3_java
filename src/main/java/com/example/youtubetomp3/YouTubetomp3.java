@@ -152,7 +152,7 @@ public class YouTubetomp3 extends Application
                     {
                         getTableView().getItems().get(getIndex()).vis.set(false);
                         getTableView().getItems().get(getIndex()).download.set(true);
-                        downloading(getTableView().getItems().get(getIndex()));
+                        downloading(getTableView().getItems().get(getIndex()), 0);
                     }
                     catch (IOException ex)
                     {
@@ -371,16 +371,18 @@ public class YouTubetomp3 extends Application
         track.tl.play();
     }
 
-    public void downloading(Link track) throws IOException
+    public void downloading(Link track, int err) throws IOException
     {
-        track.p = Runtime.getRuntime().exec(new String[]{"bash", "-c", "yt-dlp --no-playlist -x --audio-format mp3 --audio-quality 320K --parse-metadata \"%(title)s:%(artist)s - %(track)s%\" --embed-metadata --postprocessor-args \"-ar 44100 -ac 2 -metadata album= -metadata genre= -metadata composer= -metadata date= -metadata comment= -metadata description= -metadata synopsis= -metadata purl=\" -o \"~/Downloads/" + track.mp3metadat.substring(0, track.mp3metadat.indexOf("(")-1) + "\" \"" + track.mp3link + "\""});
+        ProcessBuilder pb = new ProcessBuilder("bash", "-c", "yt-dlp --no-playlist -x --audio-format mp3 --audio-quality 320K --parse-metadata \"%(title)s:%(artist)s - %(track)s%\" --embed-metadata --postprocessor-args \"-ar 44100 -ac 2 -metadata album= -metadata genre= -metadata composer= -metadata date= -metadata comment= -metadata description= -metadata synopsis= -metadata purl=\" -o \"~/Downloads/" + track.mp3metadat.substring(0, track.mp3metadat.indexOf("(")-1) + "\" \"" + track.mp3link + "\"").redirectErrorStream(true);
+        track.p = pb.start();
         BufferedReader br = new BufferedReader(new InputStreamReader(track.p.getInputStream()));
 
         new Thread(() ->
         {
             String lin;
 
-            loading(1, track);
+            if (err == 0)
+                loading(1, track);
             try
             {
                 while ((lin = br.readLine()) != null)
@@ -394,6 +396,8 @@ public class YouTubetomp3 extends Application
                         track.tl.stop();
                         track.perc.set(100);
                     }
+                    if (lin.contains("Error 403"))
+                        downloading(track, 1);
                 }
                 if (track.p.waitFor() == 0)
                 {
