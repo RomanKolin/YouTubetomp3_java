@@ -280,11 +280,12 @@ public class YouTubetomp3 extends Application
     {
         AtomicInteger i = new AtomicInteger();
         String[] loadarr = new String[]{"", ".", "..", "..."};
+        Link track = new Link(link, "");
 
-        mp3list.add(new Link(link, ""));
+        mp3list.add(track);
         Timeline tl = new Timeline(new KeyFrame(Duration.seconds(0.3), e ->
         {
-            mp3list.set(id.intValue(), new Link(link, loadarr[i.intValue()]));
+            mp3list.set(id.intValue(), new Link(track.mp3link, loadarr[i.intValue()]));
             i.incrementAndGet();
             if (i.intValue() >= loadarr.length)
                 i.set(0);
@@ -295,7 +296,7 @@ public class YouTubetomp3 extends Application
         tableview1mp3.setItems(mp3list);
         try
         {
-            metadata(link, tl, "");
+            metadata(track, tl, "");
         }
         catch (IOException e)
         {
@@ -303,9 +304,9 @@ public class YouTubetomp3 extends Application
         }
     }
 
-    public void metadata(String link, Timeline tl, String cook) throws IOException
+    public void metadata(Link track, Timeline tl, String cook) throws IOException
     {
-        ProcessBuilder pb = new ProcessBuilder("bash", "-c", "yt-dlp " + cook + "--no-playlist --print \"%(artist)s - %(title)s (%(duration_string)s)\" \"" + link + "\"");
+        ProcessBuilder pb = new ProcessBuilder("bash", "-c", "yt-dlp " + cook + "--no-playlist --print \"%(artist)s - %(title)s (%(duration_string)s)\" \"" + track.mp3link + "\"");
         Process metadatproc = pb.start();
         BufferedReader br = new BufferedReader(new InputStreamReader(metadatproc.getInputStream()));
 
@@ -319,11 +320,12 @@ public class YouTubetomp3 extends Application
                 metadat = br.readLine();
                 if (metadat == null)
                 {
-                    metadata(link, tl, "--cookies-from-browser firefox ");
+                    if (cook.isEmpty())
+                        metadata(track, tl, "--cookies-from-browser firefox ");
                     return;
                 }
                 tl.stop();
-                lin = new Link(link, metadat.replace("NA - ", "").replace("\"", "").replace("/", ""));
+                lin = new Link(track.mp3link, metadat.replace("NA - ", "").replace("\"", "").replace("/", ""));
                 lin.vis.set(true);
                 mp3list.set(id.intValue(), lin);
                 id.incrementAndGet();
@@ -375,8 +377,9 @@ public class YouTubetomp3 extends Application
     public void downloading(Link track, int err, String cook) throws IOException
     {
         ProcessBuilder pb = new ProcessBuilder("bash", "-c", "yt-dlp " + cook + "--no-playlist -x --audio-format mp3 --audio-quality 320K --parse-metadata \"%(title)s:%(artist)s - %(track)s%\" --embed-metadata --postprocessor-args \"-ar 44100 -ac 2 -metadata album= -metadata genre= -metadata composer= -metadata date= -metadata comment= -metadata description= -metadata synopsis= -metadata purl=\" -o \"~/Downloads/" + track.mp3metadat.substring(0, track.mp3metadat.indexOf("(")-1) + "\" \"" + track.mp3link + "\"").redirectErrorStream(true);
-        track.p = pb.start();
-        BufferedReader br = new BufferedReader(new InputStreamReader(track.p.getInputStream()));
+        Process downloadproc = pb.start();
+        BufferedReader br = new BufferedReader(new InputStreamReader(downloadproc.getInputStream()));
+        track.p = downloadproc;
 
         new Thread(() ->
         {
@@ -402,7 +405,7 @@ public class YouTubetomp3 extends Application
                     if (lin.contains("Sign in to") || lin.contains("Music Premium"))
                         downloading(track, 1, "--cookies-from-browser firefox ");
                 }
-                if (track.p.waitFor() == 0)
+                if (downloadproc.waitFor() == 0)
                 {
                     linkset.remove(track.mp3link);
                     mp3list.remove(track);
@@ -412,7 +415,7 @@ public class YouTubetomp3 extends Application
             }
             catch (Exception e)
             {
-                track.p.destroyForcibly();
+                downloadproc.destroyForcibly();
             }
         }).start();
     }
