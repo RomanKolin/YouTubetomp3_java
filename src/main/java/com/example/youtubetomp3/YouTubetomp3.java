@@ -152,7 +152,7 @@ public class YouTubetomp3 extends Application
                     {
                         getTableView().getItems().get(getIndex()).vis.set(false);
                         getTableView().getItems().get(getIndex()).download.set(true);
-                        downloading(getTableView().getItems().get(getIndex()), 0);
+                        downloading(getTableView().getItems().get(getIndex()), 0, "");
                     }
                     catch (IOException ex)
                     {
@@ -295,7 +295,7 @@ public class YouTubetomp3 extends Application
         tableview1mp3.setItems(mp3list);
         try
         {
-            metadata(link, tl);
+            metadata(link, tl, "");
         }
         catch (IOException e)
         {
@@ -303,9 +303,10 @@ public class YouTubetomp3 extends Application
         }
     }
 
-    public void metadata(String link, Timeline tl) throws IOException
+    public void metadata(String link, Timeline tl, String cook) throws IOException
     {
-        Process metadatproc = Runtime.getRuntime().exec(new String[]{"bash", "-c", "yt-dlp --no-playlist --print \"%(artist)s - %(title)s (%(duration_string)s)\" \"" + link + "\""});
+        ProcessBuilder pb = new ProcessBuilder("bash", "-c", "yt-dlp " + cook + "--no-playlist --print \"%(artist)s - %(title)s (%(duration_string)s)\" \"" + link + "\"");
+        Process metadatproc = pb.start();
         BufferedReader br = new BufferedReader(new InputStreamReader(metadatproc.getInputStream()));
 
         metadatproc.onExit().thenRun(() ->
@@ -313,17 +314,17 @@ public class YouTubetomp3 extends Application
             Link lin;
             String metadat;
 
-            tl.stop();
             try
             {
                 metadat = br.readLine();
-                if (metadat != null)
+                if (metadat == null)
                 {
-                    lin = new Link(link, metadat.replace("NA - ", "").replace("\"", "").replace("/", ""));
-                    lin.vis.set(true);
+                    metadata(link, tl, "--cookies-from-browser firefox ");
+                    return;
                 }
-                else
-                    lin = new Link(link, "Video unavailable");
+                tl.stop();
+                lin = new Link(link, metadat.replace("NA - ", "").replace("\"", "").replace("/", ""));
+                lin.vis.set(true);
                 mp3list.set(id.intValue(), lin);
                 id.incrementAndGet();
             }
@@ -371,9 +372,9 @@ public class YouTubetomp3 extends Application
         track.tl.play();
     }
 
-    public void downloading(Link track, int err) throws IOException
+    public void downloading(Link track, int err, String cook) throws IOException
     {
-        ProcessBuilder pb = new ProcessBuilder("bash", "-c", "yt-dlp --no-playlist -x --audio-format mp3 --audio-quality 320K --parse-metadata \"%(title)s:%(artist)s - %(track)s%\" --embed-metadata --postprocessor-args \"-ar 44100 -ac 2 -metadata album= -metadata genre= -metadata composer= -metadata date= -metadata comment= -metadata description= -metadata synopsis= -metadata purl=\" -o \"~/Downloads/" + track.mp3metadat.substring(0, track.mp3metadat.indexOf("(")-1) + "\" \"" + track.mp3link + "\"").redirectErrorStream(true);
+        ProcessBuilder pb = new ProcessBuilder("bash", "-c", "yt-dlp " + cook + "--no-playlist -x --audio-format mp3 --audio-quality 320K --parse-metadata \"%(title)s:%(artist)s - %(track)s%\" --embed-metadata --postprocessor-args \"-ar 44100 -ac 2 -metadata album= -metadata genre= -metadata composer= -metadata date= -metadata comment= -metadata description= -metadata synopsis= -metadata purl=\" -o \"~/Downloads/" + track.mp3metadat.substring(0, track.mp3metadat.indexOf("(")-1) + "\" \"" + track.mp3link + "\"").redirectErrorStream(true);
         track.p = pb.start();
         BufferedReader br = new BufferedReader(new InputStreamReader(track.p.getInputStream()));
 
@@ -397,7 +398,9 @@ public class YouTubetomp3 extends Application
                         track.perc.set(100);
                     }
                     if (lin.contains("Error 403"))
-                        downloading(track, 1);
+                        downloading(track, 1, cook);
+                    if (lin.contains("Sign in to") || lin.contains("Music Premium"))
+                        downloading(track, 1, "--cookies-from-browser firefox ");
                 }
                 if (track.p.waitFor() == 0)
                 {
